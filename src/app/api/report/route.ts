@@ -1,11 +1,8 @@
 import { NextApiRequest } from 'next';
 import dbConnect from '../lib/dbConnect';
-// import { Report } from '../models/Report';
+import { Report } from '../models/Report';
 import { NextResponse } from 'next/server';
-// import { reportType } from '@/utils/shared-types';
-import { Report } from '../models/Reports';
 import { reportType } from '@/utils/shared-types';
-// import { reportType } from '@/utils/shared-types';
 
 export async function POST(request: any) {
   let report: reportType = await request.json();
