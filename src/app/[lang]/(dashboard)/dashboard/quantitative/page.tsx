@@ -23,7 +23,7 @@ const Page = () => {
       <iframe
         onLoad={handleIframeLoaded}
         loading="lazy"
-        src="https://dashboard.kaeyros.org/#!/quantitative"
+        src="https://dashboard.dina.nrw/#!/quantitative"
         className="w-full h-screen"
       />
     </div>
