@@ -57,9 +57,15 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
   const [currentDateStart, setCurrentDateStart] = useState<any>();
   const [currentDateEnd, setCurrentDateEnd] = useState<any>();
   const [selectedtDateStart, setSelectedtDateStart] = useState<any>();
-  const [identityData, setIdentityData] = useState<any>();
-  const [employeAge, setEmployeAge] = useState<string>();
-  const [reportingAge, setReportingAge] = useState<string>();
+  const [identityData, setIdentityData] = useState<any>(
+    firstStepTranslation.identityOpt[0].label
+  );
+  const [employeAge, setEmployeAge] = useState<string>(
+    firstStepTranslation.ageRangeOpt[0].label
+  );
+  const [reportingAge, setReportingAge] = useState<string>(
+    firstStepTranslation.employeesNumbOpt[0].label
+  );
   const [location, setLocation] = useState<string>('');
 
   const { dispatch, reportingPerson, isEditing } = useFormContext();
@@ -236,6 +242,8 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
 
   // Triggered when submitting form
   const onSubmit: SubmitHandler<FirstFormValues> = (data) => {
+    console.log('data',data);
+    
     let step = getFormStep();
     let identificationData = identityData;
     let dateRange = [dateStart, dateEnd];
@@ -259,6 +267,8 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
       reportingAge,
     };
     setFormCookies(dataWithQuestion, FIRST_FORM);
+    console.log('dataWithQuestion',dataWithQuestion);
+    
     // console.log(dataWithQuestion, 'this is my incident date');
 
     isEditing && reportingPerson === 'myself'

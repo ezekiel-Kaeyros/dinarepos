@@ -24,6 +24,10 @@ const buttonVariants = cva(
         default: 'bg-black w-full text-white hover:bg-slate-800 mx-auto',
         primary: 'bg-primaryColor w-full hover:opacity-90 mx-auto',
         danger: 'bg-red-500 w-full text-white hover:bg-red-600 mx-auto',
+        outlinePrimary:
+          'text-[#2B8049] border border-[#2B8049] hover:opacity-90',
+        outlineWarning:
+          'text-[#F36D38] border border-[#F36D38] hover:opacity-90',
         outline:
           'w-full mx-auto text-white border border-slate-300 hover:bg-primaryColor hover:text-white hover:border-primaryColor',
         disabled: 'bg-primaryColor opacity-30 w-full text-white mx-auto',

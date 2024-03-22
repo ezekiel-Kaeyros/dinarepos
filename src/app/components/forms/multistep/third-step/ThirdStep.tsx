@@ -16,6 +16,7 @@ import { FORM_ERRORS, LAST_STEP, NEXT_STEP } from '@/app/context/actions';
 import { ThirdFromValues } from './thirdStep';
 import { identityData } from '../first-step/firstFormData';
 import { organization } from '../second-step/secondFormData';
+import ReportService from '@/services/reportService';
 
 type ThirdStepProps = {
   thirdStepTranslation: {
@@ -36,9 +37,19 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ thirdStepTranslation }) => {
   let secondForm: {
     step: number;
     question: string;
-    otherFormOfDisc: string;
-    haveYouReported: string;
+    happenedOverALongPeriodOfTime: string;
+    location: string;
+    happenedOnline: string;
     manifestationOfDiscrimination: string;
+    manifestationOfDiscriminationFreeField: string;
+    otherFormOfDisc: string;
+    otherFormOfDiscFreeField: string;
+    otherFormOfDiscYes: string;
+    haveYouReported: string;
+    haveYouReportedYes: string;
+    haveYouReportedYesFreeField: string;
+   
+    agreementForReportingOnBehalf: string;
     description: string;
     question1: string;
     question2: string;
@@ -69,17 +80,147 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ thirdStepTranslation }) => {
     incidentDate: any;
     dateStart: any;
     location: any;
-    employeeAge: string;
+    employeAge: string;
     reportingAge: string;
   } = getFormCookies(FIRST_FORM);
+console.log('firstForm', getFormCookies(FIRST_FORM));
 
   const { dispatch, reportingPerson, isEditing } = useFormContext();
 
   const onSubmit: SubmitHandler<any> = (data) => {
-    isEditing && reportingPerson === 'myself'
-      ? dispatch({ type: LAST_STEP, payload: 10 })
-      : dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
-    clearFormCookies();
+    // alert('ok');
+    dispatch({ type: FORM_ERRORS, payload: true });
+    let secondForm: {
+      happenedOverALongPeriodOfTime: string;
+
+      manifestationOfDiscrimination: string;
+      manifestationOfDiscriminationFreeField: string;
+      otherFormOfDisc: string;
+      otherFormOfDiscFreeField: string;
+      otherFormOfDiscYes: string;
+      haveYouReported: string;
+      haveYouReportedYes: string;
+      haveYouReportedYesFreeField: string;
+      description: string;
+      agreementForReportingOnBehalf: string;
+    } = getFormCookies(SECOND_FORM);
+
+    let firstForm: {
+      periodOfTime: string;
+
+      gender: string;
+      age: string;
+      genderFreeField: string;
+      typeOfOrganization: string[];
+      numberOfEmployees: string;
+      typeOfOrganizationFreeField: string;
+      happenedOnlineFreeField: string;
+      PeriodOfTimeFreeField: string;
+      happenedOnline: string;
+      identity: string;
+      identificationData: string;
+      dateRange: any;
+      incidentDate: any;
+      dateStart: any;
+      location: any;
+      employeAge: string;
+      reportingAge: string;
+    } = getFormCookies(FIRST_FORM);
+    let happenedOnlineFreeField = firstForm.happenedOnlineFreeField;
+    let otherFormOfDiscFreeField = secondForm.otherFormOfDiscFreeField;
+    let genderFreeField = firstForm.genderFreeField;
+    let haveYouReportedYes = secondForm.haveYouReportedYes;
+    let happenedOverALongPeriodOfTime =
+      secondForm.happenedOverALongPeriodOfTime;
+    let agreementForReportingOnBehalf =
+      secondForm.agreementForReportingOnBehalf;
+    let periodOfTime = firstForm.periodOfTime;
+    let PeriodOfTimeFreeField = firstForm.PeriodOfTimeFreeField;
+    let manifestationOfDiscriminationFreeField =
+      secondForm?.manifestationOfDiscriminationFreeField;
+    let haveYouReportedYesFreeField = secondForm?.haveYouReportedYesFreeField;
+    let manifestationOfDiscrimination =
+      secondForm?.manifestationOfDiscrimination;
+    let identity = firstForm?.identificationData;
+    let description = secondForm?.description;
+    let organizationType = firstForm?.typeOfOrganization;
+    let organizationTypeFreeField = firstForm?.typeOfOrganizationFreeField;
+    let numberOfEmployees = firstForm?.reportingAge;
+    let valueDate: string = firstForm?.incidentDate;
+    let dateRangeState: string =
+      (firstForm?.dateRange && firstForm?.dateRange.toString()) || '';
+
+    let location = firstForm?.location;
+
+    let locationOnline = firstForm?.happenedOnline;
+    let otherFormOfDisc = secondForm.otherFormOfDisc;
+    let otherFormOfDiscYes = secondForm?.otherFormOfDiscYes;
+
+    let haveYouReported = secondForm?.haveYouReported;
+
+    let gender = firstForm?.gender;
+
+    let age = firstForm?.employeAge;
+
+    const report = {
+      happenedOnlineFreeField,
+      otherFormOfDiscFreeField,
+      genderFreeField,
+      haveYouReportedYes,
+      agreementForReportingOnBehalf,
+      happenedOverALongPeriodOfTime,
+      periodOfTime,
+      PeriodOfTimeFreeField,
+      identity,
+      description,
+      organizationType,
+      organizationTypeFreeField,
+      numberOfEmployees,
+      valueDate,
+      dateRangeState,
+      // datePeriod,
+      location,
+      // stadtteil,
+      locationOnline,
+      otherFormOfDisc,
+      otherFormOfDiscYes,
+      haveYouReported,
+      haveYouReportedYesFreeField,
+      manifestationOfDiscrimination,
+      manifestationOfDiscriminationFreeField,
+
+      gender,
+
+      age,
+    
+    };
+
+    console.log('report', report);
+    const response = new ReportService().sendReport(report).then((result)=>{
+      if (result.status===201 || result.status===200) {
+        console.log('Successfull');
+        clearFormCookies();
+        dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
+      } else {
+        dispatch({ type: FORM_ERRORS, payload: false });
+        console.log('failed');
+        // setCaptchaLoading(false);
+        throw new Error('Fetching error occured, please reload');
+      }
+    }).catch((error)=>{console.log("error")
+      // setCaptchaLoading(false);
+      dispatch({ type: FORM_ERRORS, payload: false });
+      throw new Error('Fetching error occured, please reload');
+        
+
+    }
+      
+    );
+    // isEditing && reportingPerson === 'myself'
+    //   ? dispatch({ type: LAST_STEP, payload: 10 })
+    //   : dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
+    // dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
+    // clearFormCookies();
   };
 
   useEffect(() => {}, [firstForm, secondForm]);
@@ -119,8 +260,8 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ thirdStepTranslation }) => {
             step={firstForm?.step}
             question={firstForm?.question3}
             answer={
-              reportingPerson === 'organization'
-                ? firstForm?.employeeAge
+              firstForm?.identificationData !== 'organization'
+                ? firstForm?.employeAge
                 : firstForm?.reportingAge
             }
           />

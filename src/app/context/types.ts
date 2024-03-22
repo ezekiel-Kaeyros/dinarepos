@@ -9,6 +9,7 @@ export type UserDataType = {
   id: number;
   email: string;
   username: string;
+  fullname: string;
   isActive: boolean;
   password: string;
   role: number;

@@ -5,6 +5,8 @@ type InputFieldProps = {
   name: string;
   placeholder?: string;
   title?: string;
+  type?: string;
+  id?: string | number;
   error?: boolean;
 };
 
@@ -12,6 +14,8 @@ const InputField: React.FC<InputFieldProps> = ({
   props,
   title,
   name,
+  type,
+  id,
   placeholder,
   error,
 }) => {
@@ -27,7 +31,7 @@ const InputField: React.FC<InputFieldProps> = ({
             : 'border-gray-300 focus:border-gray-200'
         }  focus:outline-none focus:border-primaryColor focus:bg-white text-gray-700 pr-16`}
         id={name}
-        type="text"
+        type={(type && type) || 'text'}
         placeholder={placeholder}
         autoComplete="off"
         autoFocus

@@ -16,15 +16,16 @@ const config: Config = {
 
       colors: {
         primaryColor: '#005F6AFF',
-        'secondary': '#FAFAFB',
-        'green': '#005F6A',
-        'neutral': '#ACAFB7',
+        primary: '#005F6AFF',
+        secondary: '#FAFAFB',
+        green: '#005F6A',
+        neutral: '#ACAFB7',
         'neutral-gray': '#BDC1C9',
         'neutral-yellow': '#F4C43B',
       },
       borderColor: {
-        'primary': '#005F6AFF',
-        'secondary': '#F4C43B'
+        primary: '#005F6AFF',
+        secondary: '#F4C43B',
       },
       borderWidth: {
         default: '1px',
@@ -33,10 +34,10 @@ const config: Config = {
         '3': '3px',
         '4': '4px',
         '6': '6px',
-      }, 
+      },
       borderRadius: {
-        'cs': "10px",
-      }
+        cs: '10px',
+      },
     },
   },
   plugins: [],
