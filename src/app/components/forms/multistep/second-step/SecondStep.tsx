@@ -138,6 +138,7 @@ const SecondStep: React.FC<SecondStepProps> = ({ secondStepTranslation }) => {
           formValues?.manifestationOfDiscriminationFreeField
         );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     haveYouReported,
     haveYouReportedYes,

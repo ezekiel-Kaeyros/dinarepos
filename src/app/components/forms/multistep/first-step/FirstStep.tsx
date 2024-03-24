@@ -217,6 +217,7 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
       'this is my form values idedtitydata'
     );
     console.log(formValues?.gender, 'this is my gender');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     identity,
     age,
@@ -242,8 +243,8 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
 
   // Triggered when submitting form
   const onSubmit: SubmitHandler<FirstFormValues> = (data) => {
-    console.log('data',data);
-    
+    console.log('data', data);
+
     let step = getFormStep();
     let identificationData = identityData;
     let dateRange = [dateStart, dateEnd];
@@ -267,8 +268,8 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
       reportingAge,
     };
     setFormCookies(dataWithQuestion, FIRST_FORM);
-    console.log('dataWithQuestion',dataWithQuestion);
-    
+    console.log('dataWithQuestion', dataWithQuestion);
+
     // console.log(dataWithQuestion, 'this is my incident date');
 
     isEditing && reportingPerson === 'myself'
