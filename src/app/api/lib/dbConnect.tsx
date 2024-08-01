@@ -9,7 +9,10 @@ declare global {
   };
 }
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI =
+  'mongodb+srv://dina-user:LZtL1VtD0KTyW4pZ@dina-db.rzr5ytg.mongodb.net/?retryWrites=true&w=majority&appName=dina-db';
+console.log(MONGODB_URI);
+
 
 if (!MONGODB_URI) {
   throw new Error(

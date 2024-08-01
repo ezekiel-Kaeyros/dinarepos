@@ -39,6 +39,7 @@ import CaptchaCheckbox from '@/app/components/captcha/captcha-checkbox/CaptchaCh
 import { verifyCaptchaAction } from '@/app/components/captcha/Captcha';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import RadioGroup from '../../radio/RadioGroup';
+import { useScrollOnTop } from '@/app/hooks/useScrollOnTop';
 
 const { RangePicker } = DatePicker;
 
@@ -57,11 +58,13 @@ const SecondStep: React.FC<SecondStepProps> = ({ secondStepTranslation }) => {
 
   const [date, setDate] = useState<Date>(new Date());
   const [dateRange, setDateRange] = useState<any>();
-  const { dispatch, reportingPerson, isEditing } = useFormContext();
+  const { dispatch, reportingPerson, isEditing, formErrors } = useFormContext();
   const [location, setLocation] = useState<string>('');
   const [captchLoading, setCaptchaLoading] = useState<boolean>(true);
   const [verified, setVerified] = useState<any>(false);
   const { executeRecaptcha } = useGoogleReCaptcha();
+  //scrollttotop
+  useScrollOnTop();
 
   const {
     register,
@@ -94,15 +97,16 @@ const SecondStep: React.FC<SecondStepProps> = ({ secondStepTranslation }) => {
 
   let captcha: string = watch('captcha');
 
-  console.log(captcha, 'ooooooooo');
-
   useEffect(() => {
     let formValues: SecondFormValuesFromCookies = getFormCookies(SECOND_FORM);
 
     // Form Validation.
     dispatch({ type: FORM_ERRORS, payload: false });
+    if (description?.length < 50 || captcha !== 'captcha') {
+      dispatch({ type: FORM_ERRORS, payload: true });
+    }
 
-    if (formValues && !description) {
+    if (formValues && description == undefined) {
       formValues?.description !== description &&
         setValue('description', formValues?.description);
 
@@ -122,7 +126,7 @@ const SecondStep: React.FC<SecondStepProps> = ({ secondStepTranslation }) => {
         setValue('otherFormOfDisc', formValues?.otherFormOfDisc);
 
       formValues?.otherFormOfDiscYes !== otherFormOfDiscYes &&
-        setValue('otherFormOfDisc', formValues?.otherFormOfDiscYes);
+        setValue('otherFormOfDiscYes', formValues?.otherFormOfDiscYes);
 
       formValues?.manifestationOfDiscrimination !==
         manifestationOfDiscrimination &&
@@ -137,7 +141,12 @@ const SecondStep: React.FC<SecondStepProps> = ({ secondStepTranslation }) => {
           'manifestationOfDiscriminationFreeField',
           formValues?.manifestationOfDiscriminationFreeField
         );
+
+      formValues?.captcha !== captcha &&
+        setValue('captcha', formValues?.captcha);
     }
+    console.log('formValues', formValues);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     haveYouReported,
@@ -208,7 +217,6 @@ const SecondStep: React.FC<SecondStepProps> = ({ secondStepTranslation }) => {
       ...data,
     };
     setFormCookies(dataWithQuestion, SECOND_FORM);
-    console.log(dataWithQuestion, 'this is my data whith questions');
 
     // isEditing && reportingPerson === 'myself'
     //   ? dispatch({ type: LAST_STEP, payload: 10 })
@@ -216,6 +224,9 @@ const SecondStep: React.FC<SecondStepProps> = ({ secondStepTranslation }) => {
     dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
     // clearFormCookies();
   };
+
+  console.log(description, 'this is my description');
+  console.log(captcha, 'this is my captcha');
 
   return (
     <form
@@ -241,7 +252,7 @@ const SecondStep: React.FC<SecondStepProps> = ({ secondStepTranslation }) => {
             placeholder={secondStepTranslation.textAreaPlaceHolder}
           />
           <p className="mb-5">
-            {errors?.description && (
+            {description?.length > 1 && description?.length < 50 && (
               <span className="text-sm text-red-600 font-bold">
                 {secondStepTranslation.validaton}
               </span>
@@ -436,13 +447,6 @@ const SecondStep: React.FC<SecondStepProps> = ({ secondStepTranslation }) => {
           value="captcha"
           label={secondStepTranslation.captcha}
         />
-        <p className="mb-5">
-          {errors?.captcha && (
-            <span className="text-sm text-red-600 font-bold">
-              {secondStepTranslation.captChaRequired}
-            </span>
-          )}
-        </p>
       </div>
     </form>
   );

@@ -17,6 +17,8 @@ import { ThirdFromValues } from './thirdStep';
 import { identityData } from '../first-step/firstFormData';
 import { organization } from '../second-step/secondFormData';
 import ReportService from '@/services/reportService';
+import { useScrollOnTop } from '@/app/hooks/useScrollOnTop';
+import { GlobalState, useGlobalContext } from '@/app/contex-provider';
 
 type ThirdStepProps = {
   thirdStepTranslation: {
@@ -48,7 +50,7 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ thirdStepTranslation }) => {
     haveYouReported: string;
     haveYouReportedYes: string;
     haveYouReportedYesFreeField: string;
-   
+
     agreementForReportingOnBehalf: string;
     description: string;
     question1: string;
@@ -79,17 +81,26 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ thirdStepTranslation }) => {
     dateRange: any;
     incidentDate: any;
     dateStart: any;
+    singleDate: any;
     location: any;
     employeAge: string;
     reportingAge: string;
+    identityOption: string;
+    employeesNumbOption: string;
+    ageOption: string;
   } = getFormCookies(FIRST_FORM);
-console.log('firstForm', getFormCookies(FIRST_FORM));
 
+  //scrollttotop
+  useScrollOnTop();
   const { dispatch, reportingPerson, isEditing } = useFormContext();
 
+  useEffect(() => {
+    dispatch({ type: FORM_ERRORS, payload: false });
+  }, []);
+
   const onSubmit: SubmitHandler<any> = (data) => {
-    // alert('ok');
     dispatch({ type: FORM_ERRORS, payload: true });
+    // alert('ok')
     let secondForm: {
       happenedOverALongPeriodOfTime: string;
 
@@ -120,12 +131,19 @@ console.log('firstForm', getFormCookies(FIRST_FORM));
       identity: string;
       identificationData: string;
       dateRange: any;
+      singleDate: any;
       incidentDate: any;
       dateStart: any;
       location: any;
       employeAge: string;
       reportingAge: string;
+      identityOption: string;
+      employeesNumbOption: string;
+      ageOption: string;
     } = getFormCookies(FIRST_FORM);
+    let identityOption = firstForm.identityOption;
+    let employeesNumbOption = firstForm.employeesNumbOption;
+    let ageOption = firstForm.ageOption;
     let happenedOnlineFreeField = firstForm.happenedOnlineFreeField;
     let otherFormOfDiscFreeField = secondForm.otherFormOfDiscFreeField;
     let genderFreeField = firstForm.genderFreeField;
@@ -149,6 +167,7 @@ console.log('firstForm', getFormCookies(FIRST_FORM));
     let valueDate: string = firstForm?.incidentDate;
     let dateRangeState: string =
       (firstForm?.dateRange && firstForm?.dateRange.toString()) || '';
+    let singleDate = firstForm.singleDate;
 
     let location = firstForm?.location;
 
@@ -163,6 +182,10 @@ console.log('firstForm', getFormCookies(FIRST_FORM));
     let age = firstForm?.employeAge;
 
     const report = {
+      identityOption,
+      employeesNumbOption,
+      ageOption,
+      singleDate,
       happenedOnlineFreeField,
       otherFormOfDiscFreeField,
       genderFreeField,
@@ -188,34 +211,30 @@ console.log('firstForm', getFormCookies(FIRST_FORM));
       haveYouReportedYesFreeField,
       manifestationOfDiscrimination,
       manifestationOfDiscriminationFreeField,
-
       gender,
-
       age,
-    
     };
 
-    console.log('report', report);
-    const response = new ReportService().sendReport(report).then((result)=>{
-      if (result.status===201 || result.status===200) {
-        console.log('Successfull');
-        clearFormCookies();
-        dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
-      } else {
-        dispatch({ type: FORM_ERRORS, payload: false });
-        console.log('failed');
+    const response = new ReportService()
+      .sendReport(report)
+      .then((result) => {
+        if (result.status === 201 || result.status === 200) {
+          console.log('Successfull');
+          clearFormCookies();
+          dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
+        } else {
+          dispatch({ type: FORM_ERRORS, payload: false });
+          console.log('failed');
+          // setCaptchaLoading(false);
+          throw new Error('Fetching error occured, please reload');
+        }
+      })
+      .catch((error) => {
+        console.log('error');
         // setCaptchaLoading(false);
+        dispatch({ type: FORM_ERRORS, payload: false });
         throw new Error('Fetching error occured, please reload');
-      }
-    }).catch((error)=>{console.log("error")
-      // setCaptchaLoading(false);
-      dispatch({ type: FORM_ERRORS, payload: false });
-      throw new Error('Fetching error occured, please reload');
-        
-
-    }
-      
-    );
+      });
     // isEditing && reportingPerson === 'myself'
     //   ? dispatch({ type: LAST_STEP, payload: 10 })
     //   : dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
@@ -224,16 +243,21 @@ console.log('firstForm', getFormCookies(FIRST_FORM));
   };
 
   useEffect(() => {}, [firstForm, secondForm]);
-  console.log(identityData, 'this is my identityData');
-  console.log(reportingPerson, 'thi is my reporting person');
-  // console.log(firstForm?.typeOfOrganization, 'this is my typeOfOrganization');
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} id="fourthForm">
+    <form onSubmit={handleSubmit(onSubmit)} id="thirdForm">
       {/* // <div onClick={handleSubmitBtn} id="fourthForm"> */}
       <div className="p-4 sm:px-10 xl:px-60">
         <div>
-          <h1 className="text-2xl font-bold text-center mb-6 [word-spacing:10px] tracking-widest">
+          <h1
+            className="text-2xl font-bold text-center mb-6 [word-spacing:10px] tracking-widest"
+            // onClick={() =>
+            //   setGlobalState((prevState: GlobalState) => ({
+            //     ...prevState,
+            //     isLoading: true,
+            //   }))
+            // }
+          >
             {thirdStepTranslation?.title3}
           </h1>
           <h2 className="font-bold mb-6 [word-spacing:10px] tracking-widest">
@@ -245,7 +269,7 @@ console.log('firstForm', getFormCookies(FIRST_FORM));
           <EditBlock
             step={firstForm?.step}
             question={firstForm?.question1}
-            answer={firstForm?.identificationData}
+            answer={firstForm?.identityOption}
           />
           <EditBlock
             step={firstForm?.step}
@@ -256,24 +280,32 @@ console.log('firstForm', getFormCookies(FIRST_FORM));
                 : firstForm?.gender
             }
           />
-          <EditBlock
-            step={firstForm?.step}
-            question={firstForm?.question3}
-            answer={
-              firstForm?.identificationData !== 'organization'
-                ? firstForm?.employeAge
-                : firstForm?.reportingAge
-            }
-          />
-          <EditBlock
-            step={firstForm?.step}
-            question={firstForm?.question4}
-            answer={
-              firstForm && firstForm?.dateRange?.includes('undefined')
-                ? firstForm?.dateRange
-                : firstForm?.incidentDate
-            }
-          />
+
+          {(!firstForm.ageOption !== true ||
+            !firstForm.employeesNumbOption !== true) && (
+            <EditBlock
+              step={firstForm?.step}
+              question={firstForm?.question3}
+              answer={
+                reportingPerson !== 'organization'
+                  ? firstForm?.ageOption
+                  : firstForm?.employeesNumbOption
+              }
+            />
+          )}
+
+          {(!firstForm.dateRange.includes(null) ||
+            firstForm.singleDate !== undefined) && (
+            <EditBlock
+              step={firstForm?.step}
+              question={firstForm?.question4}
+              answer={
+                firstForm && firstForm?.dateRange?.includes('undefined')
+                  ? firstForm?.dateRange
+                  : firstForm?.singleDate
+              }
+            />
+          )}
           <EditBlock
             step={firstForm?.step}
             question={firstForm?.question5}
@@ -302,17 +334,38 @@ console.log('firstForm', getFormCookies(FIRST_FORM));
               <EditBlock
                 step={secondForm?.step}
                 question={secondForm?.question2}
-                answer={secondForm?.manifestationOfDiscrimination}
+                answer={
+                  secondForm.manifestationOfDiscriminationFreeField
+                    ? [
+                        secondForm?.manifestationOfDiscrimination,
+                        secondForm.manifestationOfDiscriminationFreeField,
+                      ]
+                    : secondForm?.manifestationOfDiscrimination
+                }
               />
               <EditBlock
                 step={secondForm?.step}
                 question={secondForm?.question3}
-                answer={secondForm?.otherFormOfDisc}
+                answer={
+                  secondForm.otherFormOfDiscYes
+                    ? [
+                        secondForm?.otherFormOfDisc,
+                        secondForm.otherFormOfDiscYes,
+                      ]
+                    : secondForm?.otherFormOfDisc
+                }
               />
               <EditBlock
                 step={secondForm?.step}
                 question={secondForm?.question4}
-                answer={secondForm?.haveYouReported}
+                answer={
+                  secondForm.haveYouReportedYesFreeField
+                    ? [
+                        secondForm.haveYouReported,
+                        secondForm.haveYouReportedYesFreeField,
+                      ]
+                    : secondForm.haveYouReported
+                }
               />
             </div>
           </div>

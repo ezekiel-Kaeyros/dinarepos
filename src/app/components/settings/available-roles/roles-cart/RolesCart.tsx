@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { PersonSubtract, PersonAvailable, Glasses, PersonStar } from './icons';
 import { getAllUsers } from '@/services/userService';
-interface clientInfoProps {
+import { useAuth } from '@/app/hooks/useAuth';
+export interface clientInfoProps {
   _id: string;
   fullname: string;
   email: string;
@@ -37,24 +38,26 @@ const roleData = [
   },
 ];
 
-const RolesCart = () => {
-  const [getUsers, setGetUsers] = useState<clientInfoProps[] | any>([]);
+const RolesCart: React.FC<{ users: clientInfoProps[] }> = ({ users }) => {
+  const { user } = useAuth();
+
+  const [getUsers, setGetUsers] = useState<clientInfoProps[] | any>(users);
 
   // get All Clients
   useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const usersData = await getAllUsers();
-        setGetUsers(usersData.users);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    }
-    fetchUsers();
+    // async function fetchUsers() {
+    //   try {
+    //     const usersData = await getAllUsers(user?.token!);
+    //     setGetUsers(usersData.users);
+    //   } catch (error) {
+    //     console.error('Error fetching users:', error);
+    //   }
+    // }
+    // fetchUsers(); should uncomment
   }, []);
 
   // filter array based on roles.
-  const roles: number[] = getUsers.map((user: any) => user.role);
+  const roles: number[] = users.map((user: any) => user.role);
   // get superAdmin role
   const superAdmin: number[] = roles.filter((role) => role === 1);
   // get Viewers role

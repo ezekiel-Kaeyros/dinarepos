@@ -13,37 +13,37 @@ export const adminLinks: Array<{
   icon: any;
   targetSegment: null | string;
 }> = [
-  {
-    name: 'Dashboard',
-    href: '/dashboard',
-    icon: HomeIcon,
-    targetSegment: null,
-  },
-  {
-    name: 'Reports',
-    href: '/dashboard/reports',
-    icon: ReportsIcon,
-    targetSegment: 'reports',
-  },
+  // {
+  //   name: 'Dashboard',
+  //   href: '/dashboard',
+  //   icon: HomeIcon,
+  //   targetSegment: null,
+  // },
+  // {
+  //   name: 'Reports',
+  //   href: '/dashboard/reports',
+  //   icon: ReportsIcon,
+  //   targetSegment: 'reports',
+  // },
 
-  {
-    name: 'Quantitative',
-    href: '/dashboard/quantitative',
-    icon: QuantitativeIcon,
-    targetSegment: 'quantitative',
-  },
-  {
-    name: 'Qualitative',
-    href: '/dashboard/qualitative',
-    icon: QualitativeIcon,
-    targetSegment: 'qualitative',
-  },
-  {
-    name: 'Compare data',
-    href: '/dashboard/compare-data',
-    icon: CompareIcon,
-    targetSegment: 'compare-data',
-  },
+  // {
+  //   name: 'Quantitative',
+  //   href: '/dashboard/quantitative',
+  //   icon: QuantitativeIcon,
+  //   targetSegment: 'quantitative',
+  // },
+  // {
+  //   name: 'Qualitative',
+  //   href: '/dashboard/qualitative',
+  //   icon: QualitativeIcon,
+  //   targetSegment: 'qualitative',
+  // },
+  // {
+  //   name: 'Compare data',
+  //   href: '/dashboard/compare-data',
+  //   icon: CompareIcon,
+  //   targetSegment: 'compare-data',
+  // },
   {
     name: 'settings',
     href: '/dashboard/settings',

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import dropDownIcon from '../../../../../public/icons/dropdown-svgrepo-com.svg';
 import dropUpIcon from '../../../../../public/icons/drop-up-svgrepo-com.svg';
 import Image from 'next/image';
+import { useFormContext } from '@/app/hooks/useFormContext';
 
 type SelectFieldProps = {
   title?: string;
-  name?: string;
+  value: string;
   options: Array<{
     id: number;
     label: string;
@@ -13,25 +14,31 @@ type SelectFieldProps = {
   props?: any;
   handleSelect: (label: string) => void;
   setCurrentInputValue?: any;
+  selectedOption?: string;
+  placeholder: string;
+  optionId: (id: string) => void;
+  name?: string;
+  // value: string;
 };
 
 const SelectField: React.FC<SelectFieldProps> = ({
   title,
   options,
-  name,
+  value,
   props,
   handleSelect,
   setCurrentInputValue,
+  selectedOption,
+  placeholder,
+  optionId,
+  name,
 }) => {
   const [dropdown, setDropdown] = useState(false);
-  // const [dropdownValue, setDropdownValue] = useState<any>()
-  const [inputValue, setInputValue] = useState<any>(options[0].label);
-  const [defaultVal, setDefaultVal] = useState<any>(options[0].label);
-  const [toggleIcon, setToggleIcon] = useState<boolean>(false);
 
-  const optionId = (id: number) => {
-    const currentValue = options.find((val) => val.id === id);
-    setInputValue(currentValue?.label);
+  const { onBehalfModal, dispatch } = useFormContext();
+
+  const toggleOnBehalfModal = () => {
+    dispatch({ type: 'ONBEHALF_MODAL' });
   };
 
   return (
@@ -54,9 +61,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
             name={name}
             type="text"
             readOnly
-            value={name}
-            defaultValue={inputValue}
-            setCurrentInputValue={setInputValue}
+            // value={name}
+            value={value}
+            placeholder={placeholder}
+            // defaultValue={inputValue}
+            // setCurrentInputValue={setInputValue}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-3 px-3  dark:border-gray-400 dark:placeholder-neutral-gray  dark:focus:ring-blue-500 dark:focus:border-blue-500 cursor-pointer"
           />
           <div className="icon-container absolute flex items-center justify-center h-full top-0 right-0 p-3">
@@ -72,21 +81,24 @@ const SelectField: React.FC<SelectFieldProps> = ({
           <div className="text-black bg-white z-[2]">
             <ul className="border border-[#F4C43B] rounded-tl-md rounded-tr-md rounded-bl-lg rounded-br-lg">
               {options
-                ?.filter((item) => item.label !== inputValue)
-                .map((option: { label: string; id: number }) => (
-                  <li
-                    key={option.id}
-                    className="p-5 cursor-pointer border border-y-[#F4C43B] hover:bg-gray-50"
-                    // onClick={() => handleSelect(option?.label)}
-                    onClick={() => {
-                      handleSelect(option?.label),
-                        setDropdown(false),
-                        optionId(option.id);
-                    }}
-                  >
-                    {option.label}
-                  </li>
-                ))}
+                ?.filter((item) => item.label !== value)
+                .map((option: { label: string; id: number | any }) => {
+                  return (
+                    <li
+                      key={option.id}
+                      className="p-5 cursor-pointer border border-y-[#F4C43B] hover:bg-gray-50"
+                      onClick={(e: any) => {
+                        handleSelect(option?.label),
+                          setDropdown(false),
+                          optionId(option.id),
+                          selectedOption === option.label &&
+                            toggleOnBehalfModal();
+                      }}
+                    >
+                      {option.label}
+                    </li>
+                  );
+                })}
             </ul>
           </div>
         )}

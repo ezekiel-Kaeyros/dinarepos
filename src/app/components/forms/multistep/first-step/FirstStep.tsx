@@ -24,10 +24,12 @@ import dayjs, { Dayjs } from 'dayjs';
 import { DatePicker, DatePickerProps } from 'antd';
 import locale from 'antd/es/date-picker/locale/de_DE';
 import moment from 'moment';
+import OnBehalfModal from './OnBehalfModal';
+import { useScrollOnTop } from '@/app/hooks/useScrollOnTop';
 
 const { RangePicker } = DatePicker;
 
-const dateFormat = 'DD-MM-YYYY';
+const dateFormat = 'DD.MM.YYYY';
 
 interface Option {
   value: string;
@@ -43,32 +45,42 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
     firstStepTranslation.title3
   );
   const [question4, setQuestion4] = useState<string>(
-    firstStepTranslation.title8
+    firstStepTranslation.title11
   );
   const [question5, setQuestion5] = useState<string>(
     firstStepTranslation.title10
   );
   const [dateStart, setDateStart] = useState<any>();
   const [dateEnd, setDateEnd] = useState<any>();
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [singledate, setSingleDate] = useState<any>();
+  // const [selectedOption, setSelectedOption] = useState(null);
 
   const [date, setDate] = useState<Date>(new Date());
   const [valueDate, setValueDate] = useState<Dayjs | null>(dayjs());
   const [currentDateStart, setCurrentDateStart] = useState<any>();
   const [currentDateEnd, setCurrentDateEnd] = useState<any>();
+  const [currentSingleDate, setCurrentSingleDate] = useState<any>();
   const [selectedtDateStart, setSelectedtDateStart] = useState<any>();
   const [identityData, setIdentityData] = useState<any>(
-    firstStepTranslation.identityOpt[0].label
+    firstStepTranslation.identityOptn[0].label
   );
   const [employeAge, setEmployeAge] = useState<string>(
     firstStepTranslation.ageRangeOpt[0].label
   );
-  const [reportingAge, setReportingAge] = useState<string>(
+  const [reportingAge, setReportingAge] = useState<string | any>(
     firstStepTranslation.employeesNumbOpt[0].label
   );
   const [location, setLocation] = useState<string>('');
+  // set Add users modal
+  const [addUser, setAddUser] = useState<boolean>(false);
 
-  const { dispatch, reportingPerson, isEditing } = useFormContext();
+  const { dispatch, reportingPerson, isEditing, onBehalfModal } =
+    useFormContext();
+
+  const toggleOnBehalfModal = () => {
+    dispatch({ type: 'ONBEHALF_MODAL' });
+  };
+
   const {
     register,
     handleSubmit,
@@ -93,6 +105,18 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
   let happenedOnline: string = watch('happenedOnline');
 
   // On range picker change
+  const onChangesetSingleDate: DatePickerProps['onChange'] = (
+    date: any,
+    dateString
+  ) => {
+    const currentDate = moment(); // Current date
+    const selectedDate = moment(date);
+    //  setCurrentDateStart(currentDate);
+    //  setSelectedtDateStart(selectedDate);
+    setCurrentSingleDate(currentDate);
+    setSingleDate(date);
+  };
+
   const onChangeDateStart: DatePickerProps['onChange'] = (
     date: any,
     dateString
@@ -123,6 +147,31 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
     setDate(date);
   }
 
+  const [identityOption, setIdentityOption] = useState<string>('');
+  const [employeesNumbOption, setEmployeesNumbOption] = useState<string>('');
+  const [ageOption, setAgeOption] = useState<string>('');
+
+  const affectedOptionId = (id: string) => {
+    const currentValue = firstStepTranslation.identityOptn.find(
+      (val: any) => val.id === id
+    );
+    setIdentityOption(currentValue?.label);
+  };
+
+  const employeesNumbOptionId = (id: string) => {
+    const currentValue = firstStepTranslation.employeesNumbOpt.find(
+      (val: any) => val.id === id
+    );
+    setEmployeesNumbOption(currentValue?.label);
+  };
+
+  const ageRangeOptionId = (id: string) => {
+    const currentValue = firstStepTranslation.ageRangeOpt.find(
+      (val: any) => val.id === id
+    );
+    setAgeOption(currentValue?.label);
+  };
+
   // Handle default date value
   let formValues = getFormCookies(FIRST_FORM);
 
@@ -140,7 +189,7 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
     } else if (reportingPerson === 'andere') {
       setQuestion2(firstStepTranslation.title2);
       setQuestion3(firstStepTranslation.title3);
-      setQuestion4(firstStepTranslation.title8);
+      setQuestion4(firstStepTranslation.title11);
       setQuestion5(firstStepTranslation.title10);
     }
 
@@ -174,16 +223,30 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
         currentDateEnd === undefined)
     ) {
       dispatch({ type: FORM_ERRORS, payload: true });
-    } else if (
+    }
+    if (
       happenedOnline &&
       happenedOnline === firstStepTranslation.happenedOnline[1].label &&
-      handleOnSelect.length === 0
+      location.length === 0
+    ) {
+      dispatch({ type: FORM_ERRORS, payload: true });
+    }
+
+    if (!identityOption) {
+      dispatch({ type: FORM_ERRORS, payload: true });
+    }
+
+    if (
+      !periodOfTime ||
+      (periodOfTime !== null &&
+        periodOfTime === firstStepTranslation.periodOfTime[1].label &&
+        singledate === undefined)
     ) {
       dispatch({ type: FORM_ERRORS, payload: true });
     }
 
     // Setting the values from the cookies
-    if (formValues && !gender) {
+    if (formValues && !gender && !singledate) {
       formValues?.periodOfTime !== periodOfTime &&
         setValue('periodOfTime', formValues?.periodOfTime);
       formValues?.happenedOnline !== happenedOnline &&
@@ -202,22 +265,20 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
           formValues?.typeOfOrganizationFreeField
         );
       formValues?.date && setValueDate(dayjs(formValues?.date));
-      formValues?.dateRange && setDateStart(formValues?.dateRange[0]);
-      formValues?.dateRange && setDateEnd(formValues?.dateRange[1]);
+      formValues?.singleDate && setSingleDate(formValues?.singleDate);
+      formValues?.dateRange[0] && setDateStart(formValues?.dateRange[0]);
+      formValues?.dateRange[1] && setDateEnd(formValues?.dateRange[1]);
       formValues?.identificationData &&
         setIdentityData(formValues?.identificationData);
       formValues?.employeAge && setEmployeAge(formValues?.employeAge);
       formValues?.reportingAge && setReportingAge(formValues?.reportingAge);
       formValues?.location && setLocation(formValues?.location);
+      formValues.identityOption &&
+        setIdentityOption(formValues?.identityOption);
+      formValues.employeesNumbOption &&
+        setEmployeesNumbOption(formValues?.employeesNumbOption);
+      formValues.ageOption && setAgeOption(formValues?.ageOption);
     }
-
-    console.log(formValues?.dateRange, 'dateRange');
-    console.log(
-      formValues?.identificationData,
-      'this is my form values idedtitydata'
-    );
-    console.log(formValues?.gender, 'this is my gender');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     identity,
     age,
@@ -236,20 +297,29 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
     currentDateStart,
     selectedtDateStart,
     currentDateEnd,
+    singledate,
     location,
     employeAge,
     reportingAge,
+    identityOption,
+    employeesNumbOption,
+    ageOption,
   ]);
+
+  // scrollOntop
+  useScrollOnTop();
 
   // Triggered when submitting form
   const onSubmit: SubmitHandler<FirstFormValues> = (data) => {
-    console.log('data', data);
-
+    const location1 =
+      data.happenedOnline == firstStepTranslation.happenedOnline[0].value
+        ? ''
+        : location;
     let step = getFormStep();
     let identificationData = identityData;
     let dateRange = [dateStart, dateEnd];
+    let singleDate = singledate;
     let incidentDate = date;
-    // console.log(data, 'this is my data');
 
     let dataWithQuestion = {
       question1,
@@ -261,20 +331,30 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
       ...data,
       identificationData,
       dateRange,
+      singleDate,
       incidentDate,
       dateStart,
-      location,
+      location: location1,
       employeAge,
       reportingAge,
+      identityOption,
+      employeesNumbOption,
+      ageOption,
     };
-    setFormCookies(dataWithQuestion, FIRST_FORM);
-    console.log('dataWithQuestion', dataWithQuestion);
 
+    setFormCookies(dataWithQuestion, FIRST_FORM);
+    // console.log('dataWithQuestion', dataWithQuestion);
     // console.log(dataWithQuestion, 'this is my incident date');
 
-    isEditing && reportingPerson === 'myself'
-      ? dispatch({ type: LAST_STEP, payload: 10 })
-      : dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
+    console.log(identityData, 'befor dispatcing');
+
+    // isEditing && reportingPerson === 'myself'
+    //   ? dispatch({ type: LAST_STEP, payload: 10 })
+    //   : dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
+
+    dispatch({ type: NEXT_STEP, payload: 'DATA 1' });
+
+    console.log(identityOption, 'identityOption');
   };
 
   const handleIdentityData = (label: string) => {
@@ -283,13 +363,13 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
     dispatch({
       type: REPORTING_PERSON,
       payload:
-        label === firstStepTranslation.identityOpt[0].label
+        label === firstStepTranslation.identityOptn[0].label
           ? 'myself'
-          : label === firstStepTranslation.identityOpt[1].label
+          : label === firstStepTranslation.identityOptn[1].label
             ? 'andere'
-            : label === firstStepTranslation.identityOpt[2].label
+            : label === firstStepTranslation.identityOptn[2].label
               ? 'onBehalf'
-              : label === firstStepTranslation.identityOpt[3].label
+              : label === firstStepTranslation.identityOptn[3].label
                 ? 'organization'
                 : '',
     });
@@ -309,63 +389,119 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
     setLocation(item?.name);
   };
 
+  const handleOnSearch = (keyword: string, item: any) => {
+    // the item selected
+    if (keyword.length == 0) {
+      setLocation(keyword);
+    }
+  };
+
+  const selectedOption = firstStepTranslation.identityOptn[2].label;
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} id="firstForm">
-      <div className="w-full relative h-auto p-x-6 sm:p-0">
-        <h1 className="text-2xl font-bold text-center mb-6 [word-spacing:10px] tracking-widest">
-          {firstStepTranslation?.title12}
-        </h1>
+    <div>
+      <OnBehalfModal
+        onClose={() => {
+          toggleOnBehalfModal();
+        }}
+        isOpen={onBehalfModal}
+        Modaldes={firstStepTranslation.modalText}
+        modalBtn={firstStepTranslation.modalBtn}
+      />
+      <form onSubmit={handleSubmit(onSubmit)} id="firstForm">
+        <div className="w-full relative h-auto p-x-6 sm:p-0">
+          <h1 className="text-2xl font-bold text-center mb-6 [word-spacing:10px] tracking-widest">
+            {firstStepTranslation?.title12}
+          </h1>
 
-        <div className="flex relative md:space-x-16 xl:space-x-24 md:items-start md:flex-row flex-col gap-y-10 justify-between items-center w-full">
-          {/* Right Column */}
-          <div className=" w-full flex items-start justify-between flex-col">
-            <div className="w-[60%]">
-              <SelectField
-                title={firstStepTranslation.title13}
-                options={firstStepTranslation.identityOpt}
-                handleSelect={handleIdentityData}
-                name={identityData}
-                setCurrentInputValue={setIdentityData}
-              />
+          <div className="flex relative md:space-x-16 xl:space-x-24 md:items-start md:flex-row flex-col gap-y-10 justify-between items-center w-full">
+            {/* Right Column */}
+            <div className=" w-full flex items-start justify-between flex-col">
+              <div className="w-[60%]">
+                <SelectField
+                  title={firstStepTranslation.title13}
+                  options={firstStepTranslation.identityOptn}
+                  handleSelect={handleIdentityData}
+                  optionId={affectedOptionId}
+                  value={identityOption}
+                  name={identityOption}
+                  setCurrentInputValue={setIdentityData}
+                  selectedOption={selectedOption}
+                  placeholder={firstStepTranslation.placeholder}
+                />
+              </div>
+              {reportingPerson === 'onBehalf' && (
+                <div className="text-sm rounded-lg mt-4">
+                  {firstStepTranslation.desc}
+                </div>
+              )}
             </div>
-            {reportingPerson === 'onBehalf' && (
-              <div className="text-sm rounded-lg mt-4">
-                {firstStepTranslation.desc}
-              </div>
-            )}
-          </div>
 
-          {/* This section changes when it is an organization */}
-          {reportingPerson === 'organization' ? (
-            <div className="w-full relative">
-              <h1 className="font-bold">{firstStepTranslation.title5}</h1>
-              <div className="w-full my-2  flex items-start justify-center flex-col">
-                {firstStepTranslation.typeOfOrg?.map((element) => (
-                  <Checkbox
-                    key={element?.iD}
-                    name={element?.name}
-                    props={register('typeOfOrganization')}
-                    value={element?.value}
-                    label={element?.value}
-                    id={element?.id}
-                  />
-                ))}
+            {/* This section changes when it is an organization */}
+            {reportingPerson === 'organization' ? (
+              <div className="w-full relative">
+                <h1 className="font-bold">{firstStepTranslation.title5}</h1>
+                <div className="w-full my-2  flex items-start justify-center flex-col">
+                  {firstStepTranslation.typeOfOrg?.map((element) => (
+                    <Checkbox
+                      key={element?.iD}
+                      name={element?.name}
+                      props={register('typeOfOrganization')}
+                      value={element?.value}
+                      label={element?.value}
+                      id={element?.id}
+                    />
+                  ))}
+                </div>
+                {typeOfOrganization &&
+                  typeOfOrganization?.includes(
+                    firstStepTranslation.typeOfOrg[6].value
+                  ) && (
+                    <div className="w-full ml-4">
+                      <InputField
+                        name="typeOfOrganizationFreeField"
+                        // props={register('typeOfOrganizationFreeField')}
+                        props={register('typeOfOrganizationFreeField', {
+                          required: true,
+                          minLength: 3,
+                        })}
+                      />
+                      <p className="mb-5">
+                        {errors?.typeOfOrganizationFreeField && (
+                          <span className="text-sm text-red-600 font-bold">
+                            {firstStepTranslation?.validation}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  )}
               </div>
-              {typeOfOrganization &&
-                typeOfOrganization?.includes(
-                  firstStepTranslation.typeOfOrg[6].value
-                ) && (
-                  <div className="w-full ml-4">
+            ) : (
+              <div className="w-full relative">
+                <div className="w-full flex items-start justify-center flex-col">
+                  <RadioGroup
+                    title={
+                      reportingPerson === 'onBehalf'
+                        ? firstStepTranslation.title4
+                        : firstStepTranslation.title2
+                    }
+                    // name={'gender'}
+                    options={firstStepTranslation.genderDataOpt}
+                    props={register('gender')}
+                  />
+                </div>
+                {gender === firstStepTranslation.genderDataOpt[4]?.label && (
+                  <div className=" xl:absolute top-[138px] right-32 w-1/2">
                     <InputField
-                      name="typeOfOrganizationFreeField"
-                      // props={register('typeOfOrganizationFreeField')}
-                      props={register('typeOfOrganizationFreeField', {
+                      error={errors?.genderFreeField ? true : false}
+                      name="genderFreeField"
+                      props={register('genderFreeField', {
                         required: true,
                         minLength: 3,
                       })}
                     />
                     <p className="mb-5">
-                      {errors?.typeOfOrganizationFreeField && (
+                      {errors?.genderFreeField && (
                         <span className="text-sm text-red-600 font-bold">
                           {firstStepTranslation?.validation}
                         </span>
@@ -373,33 +509,135 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
                     </p>
                   </div>
                 )}
-            </div>
-          ) : (
-            <div className="w-full relative">
-              <div className="w-full flex items-start justify-center flex-col">
-                <RadioGroup
-                  title={
-                    reportingPerson === 'onBehalf'
-                      ? firstStepTranslation.title4
-                      : firstStepTranslation.title2
-                  }
-                  // name={'gender'}
-                  options={firstStepTranslation.genderDataOpt}
-                  props={register('gender')}
-                />
               </div>
-              {gender === firstStepTranslation.genderDataOpt[4]?.label && (
-                <div className=" xl:absolute top-[138px] right-32 w-1/2">
-                  <InputField
-                    error={errors?.genderFreeField ? true : false}
-                    name="genderFreeField"
-                    props={register('genderFreeField', {
-                      required: true,
-                      minLength: 3,
-                    })}
+            )}
+          </div>
+
+          {/* This section changes when it is an organization */}
+          <div className="w-full sm:flex xl:space-x-24 mt-5 items-center justify-center">
+            <div className="w-full">
+              {reportingPerson === 'organization' ? (
+                // <div className="my-10 md:absolute md:top-32 md:max-w-xl flex items-start justify-center flex-col w-1/2">
+                <div className="my-4 sm:flex items-start justify-center flex-col w-[65%]">
+                  <SelectField
+                    title={firstStepTranslation.title7}
+                    options={firstStepTranslation.employeesNumbOpt}
+                    handleSelect={handleNumberOfEmployees}
+                    // props={register('employeeAge')}
+                    // name={reportingAge}
+                    optionId={employeesNumbOptionId}
+                    value={employeesNumbOption}
+                    name={employeesNumbOption}
+                    setCurrentInputValue={setReportingAge}
+                    placeholder={firstStepTranslation.placeholder}
+                  />
+                </div>
+              ) : (
+                <div className="my-4 sm:flex items-start justify-center flex-col w-1/2">
+                  <SelectField
+                    title={
+                      reportingPerson === 'onBehalf'
+                        ? firstStepTranslation.title6
+                        : firstStepTranslation.title3
+                    }
+                    // props={register('age')}
+                    // name={employeAge}
+                    optionId={ageRangeOptionId}
+                    value={ageOption}
+                    name={ageOption}
+                    options={firstStepTranslation.ageRangeOpt}
+                    placeholder={firstStepTranslation.placeholder}
+                    handleSelect={handleAgeRangeOpt}
+                    setCurrentInputValue={setEmployeAge}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="w-full">
+              <RadioGroup
+                title={firstStepTranslation.title8}
+                options={firstStepTranslation.periodOfTime}
+                props={register('periodOfTime')}
+              />
+              {periodOfTime === firstStepTranslation.periodOfTime[1].label && (
+                <div className="w-[60%]">
+                  <h1 className="font-bold text-gray-900">
+                    {firstStepTranslation.title9}
+                  </h1>
+                  <DatePicker
+                    format={dateFormat}
+                    locale={locale}
+                    disabledDate={disabledDate}
+                    className=" appearance-none border rounded-cs w-full py-3 px-3 leading-tight border-gray-300  focus:outline-none focus:border-primaryColor focus:bg-white text-gray-700 pr-16 font-mono"
+                    onChange={onChangesetSingleDate}
+                    placeholder="TT.MM.JJ"
+                    defaultValue={singledate ? dayjs(singledate) : undefined}
+                  />
+                </div>
+              )}
+
+              {periodOfTime === firstStepTranslation.periodOfTime[0].label && (
+                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full items-center">
+                  <div className="flex flex-col md:flex-col w-full text-sm md:mb-0 md:items-start">
+                    <div className="mr-4 mb-2 md:mb-0 lg:text-xl">
+                      <h1>von</h1>
+                    </div>
+                    <DatePicker
+                      className="w-full py-3 focus:border-primaryColor focus:border"
+                      disabledDate={disabledDate}
+                      defaultValue={dateStart ? dayjs(dateStart) : undefined}
+                      onChange={onChangeDateStart}
+                      format={dateFormat}
+                      placeholder="TT.MM.JJ"
+                    />
+                  </div>
+                  <div className="flex flex-col md:flex-col text-sm md:mb-0 md:items-start w-full">
+                    <div className="mr-5 mb-2 md:mb-0 md:mr-4 lg:text-xl">
+                      <h1>Bis</h1>
+                    </div>
+                    <DatePicker
+                      disabledDate={(current) => {
+                        // Your logic to disable specific dates
+                        return (
+                          current &&
+                          (current < dateStart ||
+                            current > dateEnd ||
+                            current.isAfter(dayjs().endOf('day')))
+                        );
+                      }}
+                      className="w-full py-3"
+                      defaultValue={dateEnd ? dayjs(dateEnd) : undefined}
+                      onChange={onChangeDateEnd}
+                      format={dateFormat}
+                      placeholder="TT.MM.JJ"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-10">
+            <div className="w-[40%]">
+              <RadioGroup
+                title={firstStepTranslation.title10}
+                options={firstStepTranslation.happenedOnline}
+                props={register('happenedOnline')}
+              />
+              {happenedOnline ===
+                firstStepTranslation.happenedOnline[1].label && (
+                <div className="w-full">
+                  <h1 className="font-bold text-gray-900">
+                    {firstStepTranslation.title11}
+                  </h1>
+                  <AutoComplete
+                    handleOnSelect={handleOnSelect}
+                    handleOnSearch={handleOnSearch}
+                    location={location}
                   />
                   <p className="mb-5">
-                    {errors?.genderFreeField && (
+                    {errors?.happenedOnlineFreeField && (
                       <span className="text-sm text-red-600 font-bold">
                         {firstStepTranslation?.validation}
                       </span>
@@ -408,131 +646,10 @@ const FirstStep: React.FC<FirstStepProps> = ({ firstStepTranslation }) => {
                 </div>
               )}
             </div>
-          )}
-        </div>
-
-        {/* This section changes when it is an organization */}
-        <div className="w-full sm:flex xl:space-x-24 mt-5 items-center justify-center">
-          <div className="w-full">
-            {reportingPerson === 'organization' ? (
-              // <div className="my-10 md:absolute md:top-32 md:max-w-xl flex items-start justify-center flex-col w-1/2">
-              <div className="my-4 sm:flex items-start justify-center flex-col w-[65%]">
-                <SelectField
-                  title={firstStepTranslation.title7}
-                  options={firstStepTranslation.employeesNumbOpt}
-                  handleSelect={handleNumberOfEmployees}
-                  // props={register('employeeAge')}
-                  name={reportingAge}
-                  setCurrentInputValue={setReportingAge}
-                />
-              </div>
-            ) : (
-              <div className="my-4 sm:flex items-start justify-center flex-col w-1/2">
-                <SelectField
-                  title={
-                    reportingPerson === 'onBehalf'
-                      ? firstStepTranslation.title6
-                      : firstStepTranslation.title3
-                  }
-                  // props={register('age')}
-                  name={employeAge}
-                  options={firstStepTranslation.ageRangeOpt}
-                  handleSelect={handleAgeRangeOpt}
-                  setCurrentInputValue={setEmployeAge}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="w-full">
-            <RadioGroup
-              title={firstStepTranslation.title8}
-              options={firstStepTranslation.periodOfTime}
-              props={register('periodOfTime')}
-            />
-            {periodOfTime === firstStepTranslation.periodOfTime[1].label && (
-              <div className="w-[60%]">
-                <h1 className="font-bold text-gray-900">
-                  {firstStepTranslation.title9}
-                </h1>
-                <DatePicker
-                  format={dateFormat}
-                  locale={locale}
-                  disabledDate={disabledDate}
-                  className=" appearance-none border rounded-cs w-full py-3 px-3 leading-tight border-gray-300  focus:outline-none focus:border-primaryColor focus:bg-white text-gray-700 pr-16 font-mono"
-                  onChange={onChange}
-                  defaultValue={
-                    formValues?.dateState
-                      ? dayjs(formValues?.dateState)
-                      : dayjs(new Date())
-                  }
-                />
-              </div>
-            )}
-
-            {periodOfTime === firstStepTranslation.periodOfTime[0].label && (
-              <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full items-center">
-                <div className="flex flex-col md:flex-col w-full text-sm md:mb-0 md:items-start">
-                  <div className="mr-4 mb-2 md:mb-0 lg:text-xl">
-                    <h1>von</h1>
-                  </div>
-                  <DatePicker
-                    className="w-full py-3 focus:border-primaryColor focus:border"
-                    disabledDate={disabledDate}
-                    defaultValue={dayjs(dateStart)}
-                    onChange={onChangeDateStart}
-                    format={dateFormat}
-                  />
-                </div>
-                <div className="flex flex-col md:flex-col text-sm md:mb-0 md:items-start w-full">
-                  <div className="mr-5 mb-2 md:mb-0 md:mr-4 lg:text-xl">
-                    <h1>Bis</h1>
-                  </div>
-                  <DatePicker
-                    disabledDate={(current) => {
-                      // Your logic to disable specific dates
-                      return (
-                        current && (current < dateStart || current > dateEnd)
-                      );
-                    }}
-                    className="w-full py-3"
-                    defaultValue={dayjs(dateEnd)}
-                    onChange={onChangeDateEnd}
-                    format={dateFormat}
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </div>
-
-        <div className="mt-10">
-          <div className="w-[40%]">
-            <RadioGroup
-              title={firstStepTranslation.title10}
-              options={firstStepTranslation.happenedOnline}
-              props={register('happenedOnline')}
-            />
-            {happenedOnline ===
-              firstStepTranslation.happenedOnline[1].label && (
-              <div className="w-full">
-                <h1 className="font-bold text-gray-900">
-                  {firstStepTranslation.title8}
-                </h1>
-                <AutoComplete handleOnSelect={handleOnSelect} />
-                <p className="mb-5">
-                  {errors?.happenedOnlineFreeField && (
-                    <span className="text-sm text-red-600 font-bold">
-                      {firstStepTranslation?.validation}
-                    </span>
-                  )}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 

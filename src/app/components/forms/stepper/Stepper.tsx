@@ -27,7 +27,7 @@ const Stepper: React.FC<StepperProps> = ({ stepperTranslation }) => {
     <div className="flex flex-col mb-16 justify-between  items-start h-48 xl:h-0 xl:flex-row xl:flex xl:justify-between xl:items-center">
       <div
         onClick={() => step === 2 && dispatch({ type: PREV_STEP })}
-        className="flex flex-col justify-center cursor-pointer xl:items-center xl:gap-y-2  px-[2px] "
+        className="flex flex-col justify-center cursor-pointer xl:items-center xl:gap-y-2  px-[2px]"
       >
         <div
           className={`w-6 h-6 flex justify-center items-center ${

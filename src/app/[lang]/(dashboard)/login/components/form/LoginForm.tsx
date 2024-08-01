@@ -15,17 +15,20 @@ import Image from 'next/image';
 
 import AuthService from '@/services/authService';
 import { usePathname, useRouter } from 'next/navigation';
-import toast, {
-  Renderable,
-  Toast,
-  Toaster,
-  ValueFunction,
-} from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { Result } from 'postcss';
-import { setUserCookies } from '@/cookies/cookies';
-import InputField from '@/app/components/forms/text-field/InputField';
+import {
+  // removeRefreshToken,
+  // setRefreshToken,
+  setUserCookies,
+} from '@/cookies/cookies';
+// import InputField from '@/app/components/forms/text-field/InputField';
 import { AuthContext, AuthProvider } from '@/app/context/AuthContext';
 import { useAuth } from '@/app/hooks/useAuth';
+import { DecodeToken } from '../DecodeToken';
+import InputField from './InputField';
+import Link from 'next/link';
+// import { verify } from '@/app/api/utils/decode';
 
 interface IFormInput {
   email: string;
@@ -52,7 +55,11 @@ const LoginForm = () => {
     reset,
   } = useForm<IFormInput>({ mode: 'onChange' || 'onBlur' || 'onSubmit' });
   const { loginUser, user } = useAuth();
-
+  // removeRefreshToken();
+  const { isShow, IshowHandler, setReports } = useContext(AuthContext);
+  useEffect(() => {
+    setReports([]);
+  }, []);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const pathname = usePathname();
@@ -62,26 +69,30 @@ const LoginForm = () => {
     setIsLoading(true);
     const response = new AuthService()
       .login(data)
-      .then(
-        (result: {
-          status: number;
-          data: {
-            user: any[];
-            message: Renderable | ValueFunction<Renderable, Toast>;
-          };
-        }) => {
-          console.log('result', result);
+      .then((result) => {
+        if (result.status === 201) {
+          const user = DecodeToken(result.headers.authorization);
 
-          if (result.status == 201) {
-            loginUser(result.data.user[0]);
-            setUserCookies(result.data.user[0]);
-            window.location.href = '/en/dashboard';
-            toast.success(result.data.message);
-            setIsLoading(false);
-          }
+          user.then((result1) => {
+            // let user1:UserDataType=result1
+
+            if (typeof result1 == 'object') {
+              // console.log('result', typeof result1);
+              setUserCookies({
+                ...result1,
+                token: result.headers.authorization,
+              });
+              //  setRefreshToken(result.headers.authorization);
+              toast.success(result.data.message);
+              setIsLoading(false);
+              window.location.href = '/en/dashboard';
+            }
+          });
         }
-      )
-      .catch((error: any) => {
+      })
+      .catch((error) => {
+        console.log('error', error);
+
         toast.error('Something went wrong, try again');
         setIsLoading(false);
       });
@@ -100,7 +111,7 @@ const LoginForm = () => {
   // console.log(user, 'ctx');
   useEffect(() => {
     if (user) {
-      console.log(user, 'user');
+      // console.log(user, 'user');
     }
   }, [user]);
   return (
@@ -123,13 +134,13 @@ const LoginForm = () => {
                 type="email"
                 id="email"
                 placeholder="Enter your username"
-                //img={personne}
+                img={personne}
                 title=""
                 props={register('email', {
                   required: true,
                   pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
                 })}
-                //isValid={errors.email ? true : false}
+                isValid={errors.email ? true : false}
               />
             </div>
             <div className="w-full my-4 relative">
@@ -138,8 +149,8 @@ const LoginForm = () => {
                 type={isPasswordVisible ? 'text' : 'password'}
                 id="password"
                 placeholder="Enter your password"
-                //img={key}
-                //isValid={errors.password ? true : false}
+                img={key}
+                isValid={errors.password ? true : false}
                 props={{
                   ...register('password', {
                     required: 'size password is min 4 Length',
@@ -153,6 +164,14 @@ const LoginForm = () => {
                 className="absolute top-1/4 right-6 cursor-pointer w-7"
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
               />
+            </div>
+            <div className="flex justify-end mr-4">
+              <Link
+                href="/reset-password"
+                className="hover:text-primary border-b-1 hover:border-b-1 hover:border-primary"
+              >
+                Forgot Password?
+              </Link>
             </div>
             <Button
               className="mt-7 rounded-lg text-sm sm:text-xl bg-primary"

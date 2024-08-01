@@ -54,7 +54,7 @@ const Faqs: React.FC<FaqsProps>  = ({faqs}) => {
     setToggle((toggle) => !toggle);
     let selecteItem = faqs?.filter((faq) => faq?.id === id);
     setSelectedItem(selecteItem[0]);
-    console.log(id);
+    // console.log(id);
   };
   return (
     <div className="relative">

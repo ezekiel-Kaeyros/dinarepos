@@ -38,7 +38,6 @@
     "melden": {
       "stepper": {
         "firstStep": {
-          "id": 1,
           "title1": "GENERAL INFORMATION",
           "title2": "What is your gender identity?*",
           "title3": "How old are you?",
@@ -49,24 +48,27 @@
           "title8": "Did the incident occur over a longer period of time?",
           "title9": "DATE",
           "title10": "Did it happen online?",
-          "title11": "Where did it happen? Please specify a location",
+          "title11": "Where did it happen? Please specify a location*",
           "title12": "GENERAL INFORMATION",
           "title13": "WHO IS AFFECTED ? *",
           "validation": "Required, Must have a minumum of 3 letters",
           "default1": "I myself",
           "default2": "female",
           "desc": "If you are filling out the questionnaire on behalf of a person, it means that you are completing the questionnaire from the perspective of the affected person and according to their self-assessment. If this is not the case and you want to describe a situation where you are providing information as an eyewitness, click the option \"Another person\" above. ",
-          "identityOpt": [
-            { "label": "Myself", "id": 1, "name": "identity" },
-            { "label": "Another person", "id": 2, "name": "identity" },
+          "modalText": "IF YOU USE THE REPORT FORM ON REPRESENTATION OF ANOTHER PERSON AUSFULIST, THAT'S WHAT IT MEANS. THAT ALL QUESTIONS FROM THE PERSPECTIVE OF THE PERSON AFFECTED SHOULD BE ANSWERED. IF YOU HAVE A CASE YOU HAVE OBSERVED, SHOW THE DESIGN. PLEASE SHOW THIS OUT YOUR PERPESTIVE BY CHOOSING A DIFFERENT OPTION ABOVE",
+          "modalBtn": "VERSTADEN",
+          "placeholder": "SELELCT OPTION",
+          "identityOptn": [
+            { "label": "Myself", "id": 11, "name": "identity" },
+            { "label": "Another person", "id": 12, "name": "identity" },
             {
               "label": "I am reporting on behalf of the affected person",
-              "id": 3,
+              "id": 13,
               "name": "identity"
             },
             {
               "label": "An organization/institution",
-              "id": 4,
+              "id": 14,
               "name": "identity"
             }
           ],
@@ -141,7 +143,7 @@
           ],
           "employeesNumbOpt": [
             { "label": "Unter 10", "id": 1, "name": "numberOfEmployees" },
-            { "label": "10 - 19", "id": 2, "name": "numberOfEmployees" },
+            { "label": "10 - 49", "id": 2, "name": "numberOfEmployees" },
             {
               "label": "50 - 250",
               "id": 3,
@@ -248,7 +250,7 @@
           "manifestationother": "Other, namely:",
           "manifestationName": "manifestationOfDiscrimination",
           "reportingPerson": "I hereby confirm that I have entered the information on behalf of the affected person. I have filled out this report form on their behalf and have their consent. All information has been filled out according to the wishes and statements of the affected person.",
-          "captcha": "I am not a robot",
+          "captcha": "I am not a robot*",
           "captChaRequired": "This field is required",
           "colognePlaceHolder": "colonge",
           "manifestationOption": [

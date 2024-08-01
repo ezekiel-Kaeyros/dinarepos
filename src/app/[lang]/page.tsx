@@ -1,3 +1,4 @@
+
 import { Locale } from '@/i18n.config';
 import { getDictionary } from '@/lib/dictionary';
 import { Suspense } from 'react';
@@ -6,6 +7,7 @@ import HeroSection from '../components/hero-section/HeroSection';
 import Carousel from '../components/carousel/Carousel';
 import Footer from '../components/footer/Footer';
 import CookieConsent from '../components/banners/CookieConsent';
+import CleanData from './(dashboard)/common/components/reports/reports-cleaner/report-actions/action-modals/CleanData';
 
 export default async function Home({
   params: { lang },
@@ -16,6 +18,7 @@ export default async function Home({
 
   return (
     <div className="h-full">
+   
       <Header lang={lang} />
       <HeroSection lang={lang} heroContent={page.home.heroSection} />
       <Footer footer={page.footer} />

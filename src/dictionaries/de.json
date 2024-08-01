@@ -45,27 +45,30 @@
           "title5": "Was für eine Organisation/Institution ist betroffen (Mehrfachantwort möglich)?",
           "title6": "Wie alt ist die betroffene Person?",
           "title7": "Wie viele Personen sind in der Organisation/Institution tätig (haupt- oder ehrenamtlich oder in freier Mitarbeit)",
-          "title8": "Lief der Vorfall über einen Längeren Zeitraum ?",
+          "title8": "Lief der Vorfall über einen Längeren Zeitraum ?*",
           "title9": "DATUM",
           "title10": "Ist es Online passiert ?",
-          "title11": "Wo ist es passiert ? Geben sie einen Ort an",
+          "title11": "WO IST ES PASSIERT ? GEBEN SIE EINEN ORT AN*",
           "title12": "ALLGEMENINE INFORMATION",
           "title13": "WER IST BETROFFEN ? *",
           "validation": "Erforderlich, muss mindestens 3 Buchstaben enthalten",
           "default1": "Ich selbst",
           "default2": "weiblich",
           "desc": "Wenn du das Meldeformular in Vertretung für eine Person ausfüllst, bedeutet das, dass du das Formular aus Perspektive der betroffenen Person und entsprechend der Selbstangaben ausfüllst. Sollte dies nicht der Fall sein und du möchtest einen Vorfall aus deiner Perspektive als Zeug*in schildern, klicke oben bitte die Option „Eine andere Person“ an.",
-          "identityOpt": [
-            { "label": "Myself", "id": 1, "name": "identity" },
-            { "label": "Another person", "id": 2, "name": "identity" },
+          "modalText": "WENN DU DAS MELDEFORMULAR IN VETRETUNG FUR EINE ANDERE PERSON AUSFULIST, BEDEUTET DAS. DASS ALLE FRAGEN AUS DER PERSPEKTIVE DER BETROFFEINEN PERSON BEANTWORTET WERDEN SOLLEN. FALLS DU EINEN FALL BEOBACHET HAST UNO SOMIT ZEIG*IN DESSIN BIST SCHILDERE BITTE DIES AUS DEINER PERPESTIVE INDEM DU OBEN DIE OPTION EINE ANDERE",
+          "modalBtn": "VERSTADEN",
+          "placeholder": "OPTION AUSWAHLEN",
+          "identityOptn": [
+            { "label": "Ich selbst", "id": "11", "name": "identity" },
+            { "label": "Eine andere Person", "id": "12", "name": "identity" },
             {
-              "label": "I am reporting on behalf of the affected person",
-              "id": 3,
+              "label": "Ich berichte im Namen der betroffenen Person",
+              "id": "13",
               "name": "identity"
             },
             {
-              "label": "An organization/institution",
-              "id": 4,
+              "label": "Eine Organisation/Institution",
+              "id": "14",
               "name": "identity"
             }
           ],
@@ -140,7 +143,7 @@
           ],
           "employeesNumbOpt": [
             { "label": "Unter 10", "id": 1, "name": "numberOfEmployees" },
-            { "label": "10 - 19", "id": 2, "name": "numberOfEmployees" },
+            { "label": "10 - 49", "id": 2, "name": "numberOfEmployees" },
             {
               "label": "50 - 250",
               "id": 3,
@@ -246,7 +249,7 @@
           "headerTit": "INFORMATIONEN ZUM VORFALL",
           "manifestationother": "Anderes und zwar:",
           "reportingPerson": "Hiermit bestätige ich, dass ich die Angaben im Namen der betroffenen Person eingeben habe. Ich habe dieses Meldeformular in Vertretung ausgefüllt und habe das Einverständnis der betroffenen Person. Alle Angaben wurden entsprechend dem Wunsch und den Aussagen der betroffenen Person ausgefüllt.",
-          "captcha": "Ich bin keine Roboter",
+          "captcha": "Ich bin keine Roboter*",
           "captChaRequired": "Dieses Feld ist erforderlich",
           "colognePlaceHolder": "Kôln",
           "manifestationOption": [

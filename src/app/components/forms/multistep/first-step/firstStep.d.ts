@@ -17,7 +17,10 @@ export type FirstStepProps = {
     default1: string;
     default1: string;
     desc: string;
-    identityOpt: Arr<{
+    modalText: string;
+    modalBtn: string;
+    placeholder: string;
+    identityOptn: Arr<{
       id: string;
       label: string;
     }>;
@@ -77,10 +80,14 @@ export type FirstFormValues = {
   // identityData: string;
   dateStart: any;
   dateEnd: any;
+  singleDate: any;
   date: any;
   employeeAge: string;
   reportingAge: string;
   identificationData: string;
+  identityOption: string;
+  employeesNumbOption: string;
+  ageOption: string;
 };
 
 export type FirstFormValuesFromCookies = {
@@ -100,6 +107,9 @@ export type FirstFormValuesFromCookies = {
   typeOfOrganization: string[];
   numberOfEmployees: string;
   typeOfOrganizationFreeField: string;
+  identityOption: string;
+  employeesNumbOption: string;
+  ageOption: string;
 
   step: number;
 
@@ -111,6 +121,7 @@ export type FirstFormValuesFromCookies = {
   dateEnd: any;
   date: any;
   dateRange: any[];
+  singleDate: any;
   location: any;
   employeAge: string;
   reportingAge: string;

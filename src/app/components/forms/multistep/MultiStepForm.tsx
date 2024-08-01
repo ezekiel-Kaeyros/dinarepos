@@ -30,14 +30,15 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({
   formTranslation,
   lang,
 }) => {
-  const { step, dispatch, reportingPerson, formErrors } = useFormContext();
+  const { step, dispatch, reportingPerson, formErrors, isEditing } =
+    useFormContext();
   let stepFromCookies = getFormStep();
 
   return (
     <div>
       <Stepper stepperTranslation={formTranslation.stepper} />
       <div>
-        {step == 1 ? (
+        {step === 1 ? (
           <FirstStep firstStepTranslation={formTranslation.stepper.firstStep} />
         ) : step === 2 ? (
           <SecondStep
@@ -70,14 +71,24 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({
           {step === 3 ? (
             <Button
               className="w-[18rem]"
-              variant="primary"
+              disabled={formErrors && true}
+              variant={`${formErrors ? 'disabled' : 'primary'}`}
+              // form={`${
+              //   stepFromCookies === 1
+              //     ? 'firstForm'
+              //     : stepFromCookies === 2
+              //       ? 'secondForm'
+              //       : stepFromCookies === 3
+              //         ? 'fourthForm'
+              //         : null
+              // }`}
               form={`${
                 stepFromCookies === 1
                   ? 'firstForm'
                   : stepFromCookies === 2
                     ? 'secondForm'
                     : stepFromCookies === 3
-                      ? 'fourthForm'
+                      ? 'thirdForm'
                       : null
               }`}
             >
@@ -85,13 +96,22 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({
             </Button>
           ) : (
             <Button
+              // form={`${
+              //   stepFromCookies === 1
+              //     ? 'firstForm'
+              //     : stepFromCookies === 2
+              //       ? 'secondForm'
+              //       : stepFromCookies === 3
+              //         ? 'fourthForm'
+              //         : null
+              // }`}
               form={`${
                 stepFromCookies === 1
                   ? 'firstForm'
                   : stepFromCookies === 2
                     ? 'secondForm'
                     : stepFromCookies === 3
-                      ? 'fourthForm'
+                      ? 'thirdForm'
                       : null
               }`}
               disabled={formErrors && true}

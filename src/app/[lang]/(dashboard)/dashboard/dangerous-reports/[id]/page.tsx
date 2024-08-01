@@ -3,9 +3,9 @@ import ReportSingle from '../../../common/components/reports/ReportSingle';
 
 const page = () => {
   return (
-    <div>
+    <>
       <ReportSingle />
-    </div>
+    </>
   );
 };
 

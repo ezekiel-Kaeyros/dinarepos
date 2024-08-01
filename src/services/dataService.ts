@@ -1,6 +1,14 @@
 import axios from 'axios';
-
+import {
+  // getRefreshToken,
+  getUserCookies,
+  removeUserCookies,
+  setUserCookies,
+} from '@/cookies/cookies';
+import { useAuth } from '@/app/hooks/useAuth';
+// import { cookies } from 'next/headers';
 const API_URL = process.env.REACT_APP_API_URL;
+const user = getUserCookies();
 
 export default class DataService {
   client: any;
@@ -9,6 +17,7 @@ export default class DataService {
       baseURL: API_URL,
       headers: {
         'content-type': 'application/json',
+        Authorization: `${user ? user.token : ''}`,
       },
     });
   }

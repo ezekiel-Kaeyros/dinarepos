@@ -10,9 +10,11 @@ export enum Category {
 }
 
 export type ReportCardProps = {
+  href?: string;
   id?: string | number;
   title: string;
   date: string;
+  href?:string
   reportType:
     | 'Uncategorized'
     | 'Raw'

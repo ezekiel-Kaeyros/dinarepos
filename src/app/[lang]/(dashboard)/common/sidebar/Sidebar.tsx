@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useContext } from 'react';
 import NavLink from './NavLink';
 import {
   adminLinks,
@@ -14,8 +14,11 @@ import LogoutIcon from './icons/LogoutIcon';
 import { useAuth } from '@/app/hooks/useAuth';
 import { removeUserCookies } from '@/cookies/cookies';
 import Link from 'next/link';
+import { AuthContext } from '@/app/context/AuthContext';
 
 const Sidebar = () => {
+  const { isShow, IshowHandler, setReports } = useContext(AuthContext);
+
   const { push } = useRouter();
   const { user } = useAuth();
   const activeSegment = useSelectedLayoutSegment();
@@ -23,17 +26,21 @@ const Sidebar = () => {
   const handleLogout = () => {
     removeUserCookies();
     push('/login');
+    // setReports([]);
   };
 
   return (
-    <div className="w-1/6 fixed top-0 border-r-2 h-screen px-8">
-      <div className="mt-8">
-        <Link href="/">
-          <Image src={Logo} alt="Logo" />
-        </Link>
-      </div>
-
-      <div className="my-24">
+    <div
+      className={`sm:w-1/6 flex  sm:relative fixed z-[100] duration-300 ease-linear
+      ${!isShow ? 'sm:translate-x-0 -translate-x-full ' : ' translate-x-0 '}
+      fixed top-0 border-r-2 h-screen lg:px-8 px-3 overflow-y-auto  flex-col justify-between pb-10 bg-[#F3F3F3]`}
+    >
+      <div className=" flex flex-col gap-5">
+        <div className="mt-8">
+          <Link href="/">
+            <Image src={Logo} alt="Logo" />
+          </Link>
+        </div>
         {user &&
           user.role == 1 &&
           adminLinks?.map((nav) => (
@@ -82,10 +89,10 @@ const Sidebar = () => {
 
       <div
         onClick={handleLogout}
-        className="absolute cursor-pointer hover:text-primary flex items-center gap-x-2 bottom-12"
+        className=" cursor-pointer hover:text-primary flex lg:justify-start sm:justify-center items-center lg:gap-x-2 bottom-12"
       >
         <LogoutIcon />
-        <div>Logout</div>
+        <div className="sm:hidden lg:block">Logout</div>
       </div>
     </div>
   );

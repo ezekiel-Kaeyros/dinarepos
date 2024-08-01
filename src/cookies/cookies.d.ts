@@ -3,3 +3,5 @@ export const FORM_STEP = 'FORM_STEP';
 export const FIRST_FORM = 'FIRST_FORM';
 export const SECOND_FORM = 'SECOND_FORM';
 export const THIRD_FORM = 'THIRD_FORM';
+export const SHOW = 'show_dina';
+

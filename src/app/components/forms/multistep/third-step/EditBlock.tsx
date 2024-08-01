@@ -16,15 +16,25 @@ const EditBlock: React.FC<EditBlockProps> = ({ question, answer, step }) => {
     dispatch({ type: IS_EDITING });
     dispatch({ type: EDIT_STEP, payload: step });
   };
+
   return (
-    <div className="my-8">
-      <div className="flex  mb-2 items-center ">
-        {question && <h1 className="font-bold text-md">{question}</h1>}
-        <span onClick={() => handleEdit(step)} className="ml-4 cursor-pointer">
-          <AnimateClick>
-            <Image src={EditIcon} alt="Edit icon" />
-          </AnimateClick>
-        </span>
+    <div className="my-8 flex flex-col items-start">
+      <div className="flex  mb-2 items-center justify-between w-full">
+        {question && answer !== null && (
+          <h1 className="font-bold text-md">{question}</h1>
+        )}
+        {answer !== null && (
+          <span
+            onClick={() => handleEdit(step)}
+            className="ml-4 cursor-pointer"
+          >
+            <AnimateClick>
+              <div className="w-6">
+                <Image src={EditIcon} alt="Edit icon" className="w-full" />
+              </div>
+            </AnimateClick>
+          </span>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center">
@@ -33,17 +43,14 @@ const EditBlock: React.FC<EditBlockProps> = ({ question, answer, step }) => {
             answer?.map(
               (element: string) =>
                 element && (
-                  <div
-                    className="bg-slate-100 p-2 rounded-md mx-1 my-1"
-                    key="key"
-                  >
+                  <div className="p-2 mx-1 my-1" key="key">
                     {element && element}
                   </div>
                 )
             )
           : answer && (
               <div
-                className="bg-slate-100 p-2 rounded-md border-4 max-w-screen-md mx-auto"
+                className="p-2 max-w-screen-md w-full overflow-x-auto"
                 key="key"
               >
                 {answer}

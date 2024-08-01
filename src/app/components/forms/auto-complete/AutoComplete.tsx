@@ -12,7 +12,7 @@ type Item = {
 };
 
 type AutoCompleteProps = {
-  handleOnSearch?: () => void;
+  handleOnSearch?: any
   handleOnSelect: any;
   handleOnHover?: () => void;
   handleOnFocus?: () => void;

@@ -6,6 +6,7 @@ import Header from '../components/header/header';
 import Head from 'next/head';
 import { FormProvider } from '../context/FormContext';
 import { Providers } from '../components/captcha/providers';
+import { AuthProvider } from '../context/AuthContext';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -36,16 +37,18 @@ export default function RootLayout({
 
       <Providers>
         <FormProvider>
-          <body className={`${poppins.className} h-screen`}>
-            {/* <Header lang={params.lang} /> */}
-            {children}
+          <AuthProvider>
+            <body className={`${poppins.className} h-screen`}>
+              {/* <Header lang={params.lang} /> */}
+              {children}
 
-            <script
-              id="dacs"
-              src="https://download.digiaccess.org/digiaccess"
-              defer
-            ></script>
-          </body>
+              <script
+                id="dacs"
+                src="https://download.digiaccess.org/digiaccess"
+                defer
+              ></script>
+            </body>
+          </AuthProvider>
         </FormProvider>
       </Providers>
     </html>
